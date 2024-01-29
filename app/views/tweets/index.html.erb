@@ -1,0 +1,44 @@
+Enjoy programming!
+<%= link_to "新規投稿ページへ", new_tweet_path %>
+<h1>GeekTwitter</h1>
+<%= button_to 'ログアウト', destroy_user_session_path, method: :delete %>
+<%= link_to "新規投稿へ", new_tweet_path %>
+<%= stylesheet_link_tag 'index', :media => "all" %>
+<%= page_entries_info @tweets %>
+<%= paginate @tweets %>
+<div class="tweets-container">
+<h3>Tweet一覧</h3>
+  <% @tweets.each do |t| %>
+    <div class="tweet">
+    <%= t.user.email %>
+    <% if user_signed_in? %>
+    <% if current_user.already_liked?(t) %>
+        <%= button_to tweet_like_path(id: t.id, tweet_id: t.id), method: :delete do %>
+          <i class="far fa-heart"></i><%= t.likes.count %>
+        <% end %>
+    <% else %>
+        <%= button_to tweet_likes_path(id: t.id, tweet_id: t.id), method: :post do %>
+          <i class="far fa-heartstyle="color:red;"></i><%= t.likes.count %>
+        <% end %>
+    <% end %>
+<% else %>
+    <p>いいねの数 = </p><%= t.likes.count %>
+<% end %>
+      <div class="main-box">
+        <div class="left-container"><%= t.body %></div>
+        <div class="right-container">
+          <%= link_to "詳細", tweet_path(t.id) %>
+          <%= link_to "編集", edit_tweet_path(t.id) %>
+          <%= link_to "削除", tweet_path(t.id), method: :delete %>
+        </div>
+  </div>
+    <p class="time"><%= t.created_at %></p>
+  </div>
+    <% end %>
+</div>
+<%= form_tag({controller:"tweets",action:"index"}, method: :get) do %>
+  <% Tag.all.each do |t| %>
+      <li><%= check_box :tag_ids, t.name %><%= t.name %></li>
+  <% end %>
+  <%= submit_tag '検索' %>
+<% end %>
